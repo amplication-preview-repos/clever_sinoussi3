@@ -1,0 +1,52 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Material {
+  cost      Float?
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  name      String?
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  createdAt        DateTime          @default(now())
+  description      String?
+  id               String            @id @default(cuid())
+  name             String?
+  price            Float?
+  productionOrders ProductionOrder[]
+  updatedAt        DateTime          @updatedAt
+}
+
+model ProductionOrder {
+  createdAt         DateTime          @default(now())
+  id                String            @id @default(cuid())
+  product           Product?          @relation(fields: [productId], references: [id])
+  productId         String?
+  productionQueues  ProductionQueue[]
+  quantity          Int?
+  requiredMaterials Json?
+  totalCost         Float?
+  updatedAt         DateTime          @updatedAt
+}
+
+model ProductionQueue {
+  createdAt         DateTime                   @default(now())
+  id                String                     @id @default(cuid())
+  productionOrder   ProductionOrder?           @relation(fields: [productionOrderId], references: [id])
+  productionOrderId String?
+  scheduledDate     DateTime?
+  status            EnumProductionQueueStatus?
+  updatedAt         DateTime                   @updatedAt
+}
+
+enum EnumProductionQueueStatus {
+  Option1
+}
